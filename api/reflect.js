@@ -1,9 +1,27 @@
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+import { OpenAI } from "openai";
 
-  if (req.method === 'OPTIONS') {
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const basePrompt = (input) => `
+You are a sacred mirror in a healing sanctuary.
+You do not give advice.
+You reflect only one deep, soul-penetrating question to help someone find truth.
+
+They say: "${input}"
+
+What is the one question their soul needs to hear now?
+`;
+
+export default async function handler(req, res) {
+  // ✅ CORS headers
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  // ✅ Return early for OPTIONS (preflight)
+  if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
@@ -23,7 +41,7 @@ export default async function handler(req, res) {
     const response = completion.choices[0].message.content.trim();
     res.status(200).json({ question: response });
   } catch (err) {
-    console.error(err);
+    console.error("OpenAI Error:", err); // 👈 Helpful log
     res.status(500).json({ error: "OpenAI error" });
   }
 }
