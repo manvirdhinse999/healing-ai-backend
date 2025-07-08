@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "functions": {
+    "api/reflect.js": {
+      "runtime": "edge"
+    }
+  },
+  "routes": [
+    {
+      "src": "/reflect",
+      "dest": "/api/reflect.js"
+    }
+  ]
+}

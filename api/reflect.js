@@ -1,0 +1,37 @@
+import { OpenAI } from "openai";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const basePrompt = (input) => `
+You are a sacred mirror in a healing sanctuary.
+You do not give advice.
+You reflect only one deep, soul-penetrating question to help someone find truth.
+
+They say: "${input}"
+
+What is the one question their soul needs to hear now?
+`;
+
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  const { text } = req.body;
+
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: basePrompt(text) }],
+      temperature: 0.9,
+    });
+
+    const response = completion.choices[0].message.content.trim();
+    res.status(200).json({ question: response });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "OpenAI error" });
+  }
+}
