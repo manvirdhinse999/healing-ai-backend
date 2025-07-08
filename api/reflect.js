@@ -1,7 +1,7 @@
-import { OpenAI } from "openai";
+import OpenAI from "openai";
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY
 });
 
 const basePrompt = (input) => `
@@ -15,7 +15,7 @@ What is the one question their soul needs to hear now?
 `;
 
 export default async function handler(req, res) {
-  // ✅ CORS Headers
+  // CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -30,21 +30,19 @@ export default async function handler(req, res) {
 
   const { text } = req.body;
 
-  if (!text) {
-    return res.status(400).json({ error: "Missing input" });
-  }
-
   try {
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: basePrompt(text) }],
-      temperature: 0.9,
+      messages: [
+        { role: "user", content: basePrompt(text) }
+      ],
+      temperature: 0.85
     });
 
     const question = completion.choices[0].message.content.trim();
     res.status(200).json({ question });
   } catch (err) {
-    console.error("OpenAI error:", err);
-    res.status(500).json({ error: "OpenAI error" });
+    console.error("OpenAI error:", err.message);
+    res.status(500).json({ error: "OpenAI backend error" });
   }
 }
