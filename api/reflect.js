@@ -15,12 +15,12 @@ What is the one question their soul needs to hear now?
 `;
 
 export default async function handler(req, res) {
-  // Set CORS headers
+  // CORS HEADERS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  // Handle preflight
+  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
@@ -30,10 +30,6 @@ export default async function handler(req, res) {
   }
 
   const { text } = req.body;
-
-  if (!text) {
-    return res.status(400).json({ error: "Missing text input." });
-  }
 
   try {
     const completion = await openai.chat.completions.create({
