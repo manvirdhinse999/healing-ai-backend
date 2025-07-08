@@ -15,12 +15,12 @@ What is the one question their soul needs to hear now?
 `;
 
 export default async function handler(req, res) {
-  // ✅ CORS headers
+  // ✅ Full CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  // ✅ Return early for OPTIONS (preflight)
+  // ✅ Handle preflight CORS request
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
@@ -41,7 +41,7 @@ export default async function handler(req, res) {
     const response = completion.choices[0].message.content.trim();
     res.status(200).json({ question: response });
   } catch (err) {
-    console.error("OpenAI Error:", err); // 👈 Helpful log
+    console.error("OpenAI Error:", err);
     res.status(500).json({ error: "OpenAI error" });
   }
 }
